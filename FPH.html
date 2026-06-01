@@ -1,0 +1,189 @@
+
+<?php
+require_once('Conn1.php');
+$sql = "SELECT * FROM itemdetails";
+$result = $conn->query($sql);
+$conn->close();
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Car Nation | Home </title>
+<style>
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    font-family: Arial, sans-serif;
+	background-color:#e6e6e6;
+}
+header {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px;
+    background-color: #990000;
+    border-bottom: 1px solid #ccc;
+    width: 100%;
+    top: 0;
+    position: fixed;
+}
+.logo img {
+    width: 95px;
+    height: 55px;
+    margin: 10%;
+    border-radius: 50px;
+}
+.nav1 ul {
+    list-style-type: none;
+    display: flex;
+    padding: 10px;
+}
+.nav1 ul li {
+    margin-right: 20px;
+    border: 5px solid;
+    border-radius: 20px;
+    gap: 5px;
+    padding: 10px;
+    background-color: black;
+}
+.nav1 ul li a {
+    text-decoration: none;
+    color: white;
+}
+.main {
+    margin-left: 35px;
+    margin-top: 100px;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+.main > * {
+    border: 2px solid black;
+    padding: 10px;
+	border-radius:20px;
+	background-color:white;
+}
+.filterDiv {
+    display: none; /* Initially hide all items */
+}
+.show {
+    display: block; /* Show filtered items */
+}
+.dropbtn {
+    background-color: black;
+    border-radius: 20px;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+}
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+.dropdown-content button {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    width: 100%;
+    text-align: left;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+.dropdown-content button:hover {
+    background-color: #ddd;
+}
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+.dropdown:hover .dropbtn {
+    background-color: #1a1a1a;
+}
+.btn.active {
+    background-color: #666;
+    color: white;
+}
+footer {
+    background-color: #fff;
+    padding: 20px;
+    text-align: center;
+    border-top: 1px solid #ccc;
+}
+footer ul {
+    list-style-type: none;
+    display: flex;
+    justify-content: center;
+}
+footer ul li {
+    margin-right: 10px;
+}
+</style>
+
+</head>
+<body>
+<header>
+    
+    <nav class="nav1">
+        <ul>
+            <li><a href="" target="_blank">Home</a></li>
+            <li><a href="FPL.html" target="_blank">Add New Item</a></li>
+            <li><a href="" target="_blank">Notification</a></li>
+            <li><a href="" target="_blank">About us</a></li>
+            <li><a href="" target="_blank">How To</a></li>
+        </ul>
+    </nav>
+    
+</header>
+<div >
+<div class="main">
+    <?php
+    if ($result->num_rows > 0) {
+        $divcount = 1;
+        while ($row = $result->fetch_assoc()) {
+            // Assign classes based on car type and brand
+            echo '<div class="filterDiv ' . strtolower($row["car_type"]) . ' ' . strtolower($row["car_brand"]) . '" id="display' . $divcount++ . '">';
+            echo '<img src="' . $row["photo"] . '" alt="Car Image" style="width:200px;height:200px; max-width:250px;"><br>';
+            echo "Name: " . $row["car_brand"] . " " . $row["car_type"] . "<br>";
+            echo "Manufactured Date: " . $row["manufactured_date"] . "<br>";
+            echo "Price: " . $row["price"] . "<br>";
+            echo "Fuel Type: " . $row["fuel_type"] . "<br>";
+            echo "Condition: " . $row["condition"] . "<br>";
+            echo "Phone No: " . $row["phone_number"] . "<br>";
+            echo '</div>';
+        }
+    } else {
+        echo "No records found in the database.";
+    }
+    ?>
+</div>
+</div>
+
+<br>
+<hr>
+<footer>
+  <ul>
+    <li>CopyRight &copy <a href="TC.html">Terms and Conditions</a>
+	<li>Email: support@carnation.com<br>
+    <li>Phone: +251(12-34-56-78-90)<br>
+    <li>Address: 123 Car Nation Street,Addis Ababa, AA 12345, Ethiopia<br>
+  </ul>
+</footer>
+
+</body>
+</html>

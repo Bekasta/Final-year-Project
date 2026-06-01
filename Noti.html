@@ -1,0 +1,100 @@
+<?php
+require_once('Conn1.php');
+
+// Define thresholds
+$low_stock_limit = 5;
+$expiry_warning_days = 7;
+
+// آج date (today)
+$today = date('Y-m-d');
+$warning_date = date('Y-m-d', strtotime("+$expiry_warning_days days"));
+
+// Query items that need attention
+$sql = "SELECT * FROM itemdetails 
+        WHERE quantity <= $low_stock_limit
+        OR expiry_date <= '$warning_date'
+        ORDER BY expiry_date ASC";
+
+$result = $conn->query($sql);
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Notifications</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f4f4f4;
+            padding: 20px;
+        }
+        h2 {
+            text-align: center;
+        }
+        .card {
+            background: white;
+            padding: 15px;
+            margin: 15px auto;
+            border-radius: 10px;
+            width: 80%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .low { border-left: 8px solid orange; }
+        .expired { border-left: 8px solid red; }
+        .warning { border-left: 8px solid #ffcc00; }
+
+        img {
+            width: 80px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>⚠️ Inventory Notifications</h2>
+
+<?php
+if ($result && $result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+
+        $class = "";
+        $message = "";
+
+        // Check expiry
+        if (!empty($row['expiry_date'])) {
+            if ($row['expiry_date'] < $today) {
+                $class = "expired";
+                $message .= "❌ Item expired! ";
+            } elseif ($row['expiry_date'] <= $warning_date) {
+                $class = "warning";
+                $message .= "⏰ Expiring soon! ";
+            }
+        }
+
+        // Check low stock
+        if ($row['quantity'] <= $low_stock_limit) {
+            $class = "low";
+            $message .= "⚠️ Low stock! ";
+        }
+
+        echo "<div class='card $class'>";
+        echo "<strong>" . htmlspecialchars($row['itemname']) . "</strong><br>";
+        echo "Quantity: " . $row['quantity'] . "<br>";
+        echo "Expiry Date: " . $row['expiry_date'] . "<br>";
+        echo "<p>$message</p>";
+
+        if (!empty($row['photo'])) {
+            echo "<img src='" . $row['photo'] . "'>";
+        }
+
+        echo "</div>";
+    }
+} else {
+    echo "<p style='text-align:center;'>No notifications 🎉</p>";
+}
+
+$conn->close();
+?>
+
+</body>
+</html>
